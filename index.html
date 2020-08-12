@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<p>计数: <output id="result"></output></p>
+<button onclick="startWorker()">开始 Worker</button> 
+<button onclick="stopWorker()">停止 Worker</button>
+<br /><br />
+
+<script>
+var w;
+var workerTimeout;
+
+function startWorker()
+{
+    // 检测浏览器是否兼容 Web Worker
+    if(typeof(Worker)!=="undefined") {
+        // 实例化 Worker
+        w=new Worker("/static/worker.js");
+        // 主线程 接受 Worker 传来的信息
+        w.onmessage = function (event) {
+            document.getElementById("result").innerHTML=event.data.num;
+            workerTimeout = event.data.workerTimeout;
+        };
+    }
+    else {
+        document.getElementById("result").innerHTML="Sorry, your browser does not support Web Workers...";
+    }
+}
+
+function stopWorker()
+{ 
+    w.terminate();
+    clearTimeout(workerTimeout);
+}
+</script>
+
+</body>
+</html>
